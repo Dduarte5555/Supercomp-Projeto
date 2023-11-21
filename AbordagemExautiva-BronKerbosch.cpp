@@ -3,8 +3,10 @@
 #include <algorithm>
 #include <numeric>
 #include <fstream>
+#include <chrono>
 
 using namespace std;
+using namespace std::chrono;
 
 // Function to check if v can be added to the current clique
 bool isSafeToAdd(int v, vector<int>& clique, vector<vector<int>>& graph) {
@@ -75,7 +77,9 @@ vector<vector<int>> LerGrafo(const string& nomeArquivo, int& numVertices) {
 
 int main(){
 
-    int numVertice = 50;
+    auto start_time = high_resolution_clock::now(); // Começa a contar o tempo para análise
+
+    int numVertice = 300;
 
     vector<int> clique;
     vector<int> candidates(numVertice);
@@ -86,7 +90,9 @@ int main(){
 
     BronKerbosch(grafo, clique, candidates, result);
 
-    // vector<int> resposta = EncontrarCliqueMaxima(grafoAnalise, numVertice); // Variaveis: Retorno da função LerGrafo(), número de vértices
+    auto end_time = high_resolution_clock::now(); // Guarda o tempo final
+
+    auto duration = duration_cast<milliseconds>(end_time - start_time); // Cálculo da duração do tempo do código em ms
 
     cout << "Maximum Clique: ";
 
@@ -96,6 +102,8 @@ int main(){
     cout << endl;
 
     cout << "Tamanho da lista: " << result.size() << endl;
+
+    cout << "Tempo de Execução: " << duration.count() << " ms" << endl;
 
     return 0;
 

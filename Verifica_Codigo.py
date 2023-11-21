@@ -11,14 +11,16 @@ with open(nome_arquivo, 'r') as arquivo:
     G = nx.parse_adjlist(arquivo)
 
 # Encontrar todas as cliques maximais
+
 cliques_maximais = list(nx.find_cliques(G))
 
 # Encontrar a clique máxima (a maior)
 clique_maxima = max(cliques_maximais, key=len)
 
-print("Cliques maximais encontradas:")
-for clique in cliques_maximais:
-    print(clique)
+# print("Cliques maximais encontradas:")
+# for clique in cliques_maximais:
+#     print("aqui")
+#     print(clique)
 
 print("Clique máxima encontrada:", clique_maxima)
 print("Tamanho da lista: ", len(clique_maxima))

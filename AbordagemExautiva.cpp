@@ -3,8 +3,10 @@
 #include<algorithm>
 #include <random>
 #include<fstream>
-// #include<LerGrafo.h>
+#include <chrono>
+
 using namespace std;
+using namespace std::chrono;
 
 vector<vector<int>> LerGrafo(const string& nomeArquivo, int& numVertices) {
     ifstream arquivo(nomeArquivo);
@@ -36,9 +38,6 @@ vector<int> EncontrarCliqueMaxima(vector<vector<int>> grafo, int numVertices){
 
 
     while (!candidatos.empty()){
-
-        // cout << "AloWhile" << endl;
-
 
         int v = candidatos.back();
         candidatos.pop_back();
@@ -81,18 +80,17 @@ vector<int> EncontrarCliqueMaxima(vector<vector<int>> grafo, int numVertices){
 
 int main(){
 
-    int numVertice = 50;
+    auto start_time = high_resolution_clock::now(); // Começa a contar o tempo para análise
+
+    int numVertice = 200;
 
     vector<vector<int>> grafoAnalise = LerGrafo("grafo.txt", numVertice); // Variaveis: Nome do Arquivo, número de vértices
 
     vector<int> resposta = EncontrarCliqueMaxima(grafoAnalise, numVertice); // Variaveis: Retorno da função LerGrafo(), número de vértices
 
-    // cout << resposta << endl;
+    auto end_time = high_resolution_clock::now(); // Guarda o tempo final
 
-    // cout << "Grafo: ";
-    // for (vector<int> linha : grafoAnalise){
-    //     cout << linha << endl;
-    // }
+    auto duration = duration_cast<milliseconds>(end_time - start_time); // Cálculo da duração do tempo do código em ms
 
     cout << "Maximum Clique: ";
 
@@ -102,6 +100,8 @@ int main(){
     cout << endl;
 
     cout << "Tamanho da lista: " << resposta.size() << endl;
+
+    cout << "Tempo de Execução: " << duration.count() << " ms" << endl;
 
     return 0;
 

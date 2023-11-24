@@ -1,73 +1,13 @@
-#include <iostream>
-#include <vector>
-#include <algorithm>
-#include <numeric>
-#include <fstream>
+#include<iostream>
+#include<vector>
+#include<algorithm>
+#include <random>
+#include<fstream>
 #include <chrono>
-#include <omp.h> // Include OpenMP header
+#include <omp.h>
 
 using namespace std;
 using namespace std::chrono;
-
-bool isSafeToAdd(int v, vector<int>& clique, vector<vector<int>>& graph) {
-    for (int u : clique) {
-        if (graph[v][u] == 0) {
-            return false;
-        }
-    }
-    return true;
-}
-
-void BronKerbosch(vector<vector<int>>& graph, vector<int>& clique, vector<int>& candidates, vector<int>& result) {
-    if (candidates.empty()) {
-        #pragma omp critical
-        {
-            if (clique.size() > result.size()) {
-                result = clique;
-            }
-        }
-        return;
-    }
-
-    int pivot = candidates[0];
-    #pragma omp parallel for
-    for (int v : candidates) {
-        if (graph[v].size() > graph[pivot].size()) {
-            #pragma omp critical
-            {
-                if (graph[v].size() > graph[pivot].size()) {
-                    pivot = v;
-                }
-            }
-        }
-    }
-
-    vector<int> candidatesCopy = candidates;
-    #pragma omp parallel for
-    for (int v : candidatesCopy) {
-        if (graph[v][pivot] == 1) {
-            continue;
-        }
-
-        vector<int> newClique = clique;
-        newClique.push_back(v);
-
-        vector<int> newCandidates;
-        #pragma omp parallel for
-        for (int u : candidates) {
-            if (graph[v][u] == 1) {
-                newCandidates.push_back(u);
-            }
-        }
-
-        BronKerbosch(graph, newClique, newCandidates, result);
-        
-        #pragma omp critical
-        {
-            candidates.erase(remove(candidates.begin(), candidates.end(), v), candidates.end());
-        }
-    }
-}
 
 vector<vector<int>> LerGrafo(const string& nomeArquivo, int& numVertices) {
     ifstream arquivo(nomeArquivo);
@@ -80,7 +20,7 @@ vector<vector<int>> LerGrafo(const string& nomeArquivo, int& numVertices) {
         int u, v;
         arquivo >> u >> v;
         grafo[u - 1][v - 1] = 1;
-        grafo[v - 1][u - 1] = 1;
+        grafo[v - 1][u - 1] = 1;  // O grafo é não direcionado
     }
 
     arquivo.close();
@@ -88,33 +28,99 @@ vector<vector<int>> LerGrafo(const string& nomeArquivo, int& numVertices) {
     return grafo;
 }
 
-int main() {
-    auto start_time = high_resolution_clock::now();
+vector<int> EncontrarCliqueMaxima(vector<vector<int>> grafo, int numVertices) {
 
-    int numVertice = 300;
+    vector<int> cliqueMaxima;
+    vector<int> candidatos;
 
-    vector<int> clique;
-    vector<int> candidates(numVertice);
-    iota(candidates.begin(), candidates.end(), 0);
-    vector<int> result;
+    #pragma omp parallel for
+    for (int i = 0; i < numVertices - 1; i++) {
+        #pragma omp critical
+        candidatos.push_back(i);
+    }
 
-    vector<vector<int>> grafo = LerGrafo("grafo.txt", numVertice);
+    while (!candidatos.empty()) {
 
-    BronKerbosch(grafo, clique, candidates, result);
+        int v;
+        #pragma omp critical
+        {
+            v = candidatos.back();
+            candidatos.pop_back();
+        }
 
-    auto end_time = high_resolution_clock::now();
+        bool podeAdicionar = true;
 
-    auto duration = duration_cast<milliseconds>(end_time - start_time);
+        #pragma omp parallel for
+        for (int u : cliqueMaxima) {
+            if (grafo[u][v] == 0) {
+                #pragma omp atomic write
+                podeAdicionar = false;
+            }
+        }
+
+        if (podeAdicionar) {
+            cliqueMaxima.push_back(v);
+            vector<int> novosCandidatos;
+
+            #pragma omp parallel
+            {
+                vector<int> privateNovosCandidatos;
+
+                #pragma omp for
+                for (int u : candidatos) {
+                    bool adjacenteATodos = true;
+
+                    #pragma omp parallel for
+                    for (int c : cliqueMaxima) {
+                        if (grafo[u][c] == 0) {
+                            #pragma omp atomic write
+                            adjacenteATodos = false;
+                        }
+                    }
+
+                    if (adjacenteATodos) {
+                        privateNovosCandidatos.push_back(u);
+                    }
+                }
+
+                #pragma omp critical
+                {
+                    novosCandidatos.insert(novosCandidatos.end(), privateNovosCandidatos.begin(), privateNovosCandidatos.end());
+                }
+            }
+
+            candidatos.insert(candidatos.end(), novosCandidatos.begin(), novosCandidatos.end());
+        }
+    }
+    return cliqueMaxima;
+}
+
+
+int main(){
+
+    auto start_time = high_resolution_clock::now(); // Começa a contar o tempo para análise
+
+    int numVertice = 200;
+
+    vector<vector<int>> grafoAnalise = LerGrafo("grafo.txt", numVertice); // Variaveis: Nome do Arquivo, número de vértices
+
+    vector<int> resposta = EncontrarCliqueMaxima(grafoAnalise, numVertice); // Variaveis: Retorno da função LerGrafo(), número de vértices
+
+    auto end_time = high_resolution_clock::now(); // Guarda o tempo final
+
+    auto duration = duration_cast<milliseconds>(end_time - start_time); // Cálculo da duração do tempo do código em ms
 
     cout << "Maximum Clique: ";
-    for (int node : result) {
+
+    for (int node : resposta) {
         cout << node << " ";
     }
     cout << endl;
 
-    cout << "Tamanho da lista: " << result.size() << endl;
+    cout << "Tamanho da lista: " << resposta.size() << endl;
 
     cout << "Tempo de Execução: " << duration.count() << " ms" << endl;
 
     return 0;
+
 }

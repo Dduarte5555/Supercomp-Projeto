@@ -79,7 +79,7 @@ int main(){
 
     auto start_time = high_resolution_clock::now(); // Começa a contar o tempo para análise
 
-    int numVertice = 300;
+    int numVertice = 200;
 
     vector<int> clique;
     vector<int> candidates(numVertice);

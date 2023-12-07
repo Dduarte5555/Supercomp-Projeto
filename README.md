@@ -56,7 +56,7 @@ Essa abordagem garante que você obtenha a clique máxima no grafo fornecido. O 
 * 2 - Criação de um grafo com 75 nós e uma probabilidade de haver uma aresta entre dois vértices de 0.7
 * 3 - Criação de um grafo com 100 nós e uma probabilidade de haver uma aresta entre dois vértices de 0.7
 
-  #TODO: COLOCAR GRAFICO
+  <img src="Figura.png">
 
  Ao observar a imagem, vemos que quanto maior o número de nós, mais nítido fica que a paralelização feita pelo openmp é mais rápido que a heurística.
  Enquanto no primeiro cenário, a primeira abordagem teve um tempo de 65ms, e outro foi 10ms. No cenário 2, a diferença aumentou, em que o primero demorou aproximadamente 458ms e o outro demorou 22ms.

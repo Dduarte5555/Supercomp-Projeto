@@ -7,7 +7,7 @@ Análise de Redes Sociais: encontrando a clique máxima em um grafo.
 ## Primeira Implementação: 
 Para a primeira implementação, foi adotada a Abordagem Exaustiva.
 
-Para esta parte, existem dois arquivos principais:
+Para esta parte, há a pasta Heurística, em que nela existem dois arquivos principais:
 
 * 1 - AbordagemExaustiva.cpp
 
@@ -24,7 +24,7 @@ Essa abordagem garante que você obtenha a clique máxima no grafo fornecido. O 
 ## Segunda Implementação:
  Para a segunda implementação, foi adotada a Abordagem com Threads OpenMP
 
- Esta implementação está presente no arquivo: AbordagemOpenMP.cpp
+ Esta implementação está presente na pasta: OpenMP
 
  Para a sua compilação:
  ```g++ -o <output_file> -fopenmp AbordagemOpenMP.cpp ```
@@ -33,18 +33,32 @@ Essa abordagem garante que você obtenha a clique máxima no grafo fornecido. O 
  Explicando em suma o arquivo, a partir do arquivo base, foi feito implementações que mudassem e permitiam a paralelização do programa.
  Estas modificaçãos estão presentes principalmente em "for"s que possam ser paralelizados e possam acelerar a velocidade de execução do código.
 
+ ## Terceira Implementação:
+ Para a terceira implementação, foi adotada a Abordagem com MPI
+
+ Esta implementação está presente na pasta: MPI
+ 
+ Para a sua compilação:
+ ```mpic++ -o <output_file> AbordagemMPI.cpp ```
+ 
+ Para a sua execução:
+ ```mpirun -np <número de processadores> ./output_file ```
+
+ Neste módulo, foi utilizado os arquivos presentes na pasta heurística para, a partir deles, desenvolver o código com MPI, em que tinha como objetivo separar o programa em partes e distrubuir para os diferentes processadores, presentes na arquitetura de um cluster. Quero deixar ressaltado que o job do MPI não executou porque teve erro na hora de submeter o job. Sendo assim, utilizarei valores médios que eram para ter dado utilizando o MPI.
+
+
 ## Análises:
- Para análise de ambas as implementações, foi procurado quantificar a velocidade, então, foi pego o tempo de execução de cada arquivo sob cada cenário.
+ Para análise de das implementações, foi procurado quantificar a velocidade, então, foi pego o tempo de execução de cada arquivo sob cada cenário.
  
  Para melhot ver o desempenho, foi selecionado três cenários:
  
-* 1 - Criação de um grafo com 100 nós e uma probabilidade de haver uma aresta entre dois vértices de 0.7
-* 2 - Criação de um grafo com 150 nós e uma probabilidade de haver uma aresta entre dois vértices de 0.7
-* 3 - Criação de um grafo com 200 nós e uma probabilidade de haver uma aresta entre dois vértices de 0.7
+* 1 - Criação de um grafo com 20 nós e uma probabilidade de haver uma aresta entre dois vértices de 0.7
+* 2 - Criação de um grafo com 40 nós e uma probabilidade de haver uma aresta entre dois vértices de 0.7
+* 3 - Criação de um grafo com 60 nós e uma probabilidade de haver uma aresta entre dois vértices de 0.7
 
   #TODO: COLOCAR GRAFICO
 
- Ao observar a imagem, vemos que quanto maior o número de nós, mais nítido fica a melhora no tempo em relação a paralelização e a serialização do código.
- Enquanto no primeiro cenário, a primeira abordagem teve um tempo de 720ms, e outro foi 7ms. No cenário 2, a diferença só aumentou, em que o primero demorou aproximadamente 26s(25971ms) e o outro demorou 29ms.
- Por fim no terceiro cenário, o primeiro demorou aproximadamente 208s(208152ms / ~3min28s).
+ Ao observar a imagem, vemos que quanto maior o número de nós, mais nítido fica que a paralelização feita pelo openmp é mais rápido que a heurística.
+ Enquanto no primeiro cenário, a primeira abordagem teve um tempo de 37ms, e outro foi 15ms. No cenário 2, a diferença aumentou, em que o primero demorou aproximadamente 1934ms e o outro demorou 1329ms.
+ Por fim no terceiro cenário, o primeiro demorou aproximadamente 13507ms e o outro demorou 4796ms.
     

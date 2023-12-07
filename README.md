@@ -44,21 +44,23 @@ Essa abordagem garante que você obtenha a clique máxima no grafo fornecido. O 
  Para a sua execução:
  ```mpirun -np <número de processadores> ./output_file ```
 
- Neste módulo, foi utilizado os arquivos presentes na pasta heurística para, a partir deles, desenvolver o código com MPI, em que tinha como objetivo separar o programa em partes e distrubuir para os diferentes processadores, presentes na arquitetura de um cluster. Quero deixar ressaltado que o job do MPI não executou porque teve erro na hora de submeter o job. Sendo assim, utilizarei valores médios que eram para ter dado utilizando o MPI.
+ Neste módulo, foi utilizado os arquivos presentes na pasta heurística para, a partir deles, desenvolver o código com MPI, em que tinha como objetivo separar o programa em partes e distrubuir para os diferentes processadores, presentes na arquitetura de um cluster. Quero deixar ressaltado que o job do MPI não executou porque teve erro na hora de submeter o job.
 
 
 ## Análises:
- Para análise de das implementações, foi procurado quantificar a velocidade, então, foi pego o tempo de execução de cada arquivo sob cada cenário.
+ Para análise de das implementações, foi procurado quantificar a velocidade, então, foi pego o tempo de execução de cada arquivo sob cada cenário. Como o MPI não funcionou, irei apresentar no gráfico 
  
  Para melhot ver o desempenho, foi selecionado três cenários:
  
-* 1 - Criação de um grafo com 20 nós e uma probabilidade de haver uma aresta entre dois vértices de 0.7
-* 2 - Criação de um grafo com 40 nós e uma probabilidade de haver uma aresta entre dois vértices de 0.7
-* 3 - Criação de um grafo com 60 nós e uma probabilidade de haver uma aresta entre dois vértices de 0.7
+* 1 - Criação de um grafo com 50 nós e uma probabilidade de haver uma aresta entre dois vértices de 0.7
+* 2 - Criação de um grafo com 75 nós e uma probabilidade de haver uma aresta entre dois vértices de 0.7
+* 3 - Criação de um grafo com 100 nós e uma probabilidade de haver uma aresta entre dois vértices de 0.7
 
   #TODO: COLOCAR GRAFICO
 
  Ao observar a imagem, vemos que quanto maior o número de nós, mais nítido fica que a paralelização feita pelo openmp é mais rápido que a heurística.
- Enquanto no primeiro cenário, a primeira abordagem teve um tempo de 37ms, e outro foi 15ms. No cenário 2, a diferença aumentou, em que o primero demorou aproximadamente 1934ms e o outro demorou 1329ms.
- Por fim no terceiro cenário, o primeiro demorou aproximadamente 13507ms e o outro demorou 4796ms.
+ Enquanto no primeiro cenário, a primeira abordagem teve um tempo de 65ms, e outro foi 10ms. No cenário 2, a diferença aumentou, em que o primero demorou aproximadamente 458ms e o outro demorou 22ms.
+ Por fim no terceiro cenário, o primeiro demorou aproximadamente 6802ms e o outro demorou 34ms.
+
+ Após essa análise de resultado, podemos ver que o paralelizado está bem mais rápido que a heurística implementada. Mas analisando outro fator, o paralelizado nem sempre retorna a clique máxima, fazendo com que ele encontre uma solução local e não a clique máxima global. Em tese, uma boa heurística com memoização deveria ser mais rápido que uma implementação de paralelização com OpenMP. Como não foi possível obter os resultados do MPI, podemos supor que teria o mesmo ou um tempo pior comparado ao OpenMP, visto que é projetado para ser uma programação paralela em sistemas dístribuídos, fazendo com que haja um delay, mesmo que pequeno, em comunicação entre os diferentes sistemas presentes na rede.
     
